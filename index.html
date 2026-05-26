@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQA 創意思考引導系統</title>
+    <!-- 引入 Tailwind CSS 提供極致精美的現代介面 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Lucide 向量圖示庫 -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .step-transition {
+            transition: all 0.3s ease-in-out;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/40 min-h-screen py-8 px-4 md:py-12">
+
+<div class="max-w-4xl mx-auto bg-white shadow-xl rounded-3xl p-6 md:p-10 border border-slate-100 relative">
+    <!-- 系統標題 -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-700 tracking-tight flex items-center justify-center gap-2 mb-2">
+            <i data-lucide="brain-circuit" class="text-indigo-600 w-8 h-8 md:w-10 md:h-10"></i>
+            IQA 創意思考引導系統
+        </h1>
+        <p class="text-sm md:text-base text-slate-500 font-medium">免 API、免費用！運用提示詞引導與免費 AI 平台打造頂級專題計畫</p>
+    </div>
+    
+    <!-- 5 步驟導航指標 (帶有 Lucide 圖示) -->
+    <div id="nav-indicator" class="flex items-center justify-between mb-8 overflow-x-auto pb-4 border-b border-slate-100 custom-scrollbar">
+        <!-- 由 JavaScript 動態繪製與更新 -->
+    </div>
+
+    <!-- 步驟主要內容 -->
+    <div id="step-content" class="step-transition min-h-[350px] bg-slate-50/50 rounded-2xl border border-slate-100 p-6 md:p-8">
+        <!-- 由 JS 渲染 -->
+    </div>
+</div>
+
+<!-- 頂級自訂通知 Toast 視窗 -->
+<div id="toast" class="fixed bottom-5 right-5 p-4 rounded-xl shadow-lg text-white font-bold flex items-center gap-2 transition-all duration-300 opacity-0 translate-y-2 pointer-events-none z-50 bg-emerald-600">
+    <i data-lucide="check-circle" class="w-5 h-5"></i>
+    <span id="toast-text">複製成功！</span>
+</div>
+
+<!-- 智慧生成加載遮罩 -->
+<div id="loader" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-xs text-center border border-indigo-50">
+        <i data-lucide="loader-2" class="animate-spin text-indigo-600 w-12 h-12 mb-4"></i>
+        <p id="loader-text" class="text-indigo-900 font-bold text-base">正在模擬處理中...</p>
+        <p class="text-xs text-slate-400 mt-2">請稍候，正在為您快速組織創意思維...</p>
+    </div>
+</div>
+
+<script>
+    // 1. 全局狀態管理與模擬資料
+    const mockKeywords = [
+        "文化記憶", "數位感應", "傳統符碼", "光影互動", "歷史溫度",
+        "虛擬展演", "情感連結", "沉浸體驗", "AR導覽", "跨世代溝通",
+        "使用者旅程", "場域美學", "多感官刺激", "老街重塑", "故事載體",
+        "互動介面", "空間敘事", "數位剪紙", "智慧導覽", "社群共享",
+        "時光隧道", "感官震撼", "歲月痕跡", "古蹟活化", "地方創生",
+        "記憶拼圖", "互動投影", "聲音地景", "感應觸發", "AR濾鏡",
+        "擴增實境", "互動迷宮", "雷射雕刻", "立體投影", "體感互動",
+        "歷史脈絡", "集體回憶", "民俗信仰", "工藝傳承", "美學重塑",
+        "動態視覺", "沉浸式聲音", "虛實整合", "科技微光", "觸覺回饋",
+        "參與式藝術", "世代傳遞", "文化密碼", "數位典藏", "情感共鳴"
+    ];
+
+    let state = {
+        step: 1,
+        topic: "",
+        keywords: [],
+        affinities: [],       // 結構: [{ category: "維度", items: ["關鍵字", ...] }]
+        specificTheme: "",    // 核心主題
+        story: "",            // 設計故事背景
+        problem: "",          // 痛點
+        solution: ""          // 技術解方
+    };
+
+    // 2. 自訂 Toast 提示機制
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastText = document.getElementById('toast-text');
+        if (!toast || !toastText) return;
+        toastText.innerText = msg;
+        
+        if (type === 'success') {
+            toast.className = "fixed bottom-5 right-5 p-4 rounded-xl shadow-lg text-white font-bold flex items-center gap-2 transition-all duration-300 z-50 bg-emerald-600";
+        } else {
+            toast.className = "fixed bottom-5 right-5 p-4 rounded-xl shadow-lg text-white font-bold flex items-center gap-2 transition-all duration-300 z-50 bg-rose-600";
+        }
+        
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-2');
+        }, 3000);
+    }
+
+    // 3. 剪貼簿複製法
+    function copyText(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            showToast('提示詞複製成功！請至 AI 平台貼上。');
+        } catch (err) {
+            showToast('複製失敗，請手動複製文字框內容。', 'error');
+        }
+        document.body.removeChild(textarea);
+    }
+
+    // 4. 渲染導航
+    function render() {
+        const steps = [
+            { id: 1, n: "探索", i: "search" },
+            { id: 2, n: "編碼", i: "pen-tool" },
+            { id: 3, n: "心智圖", i: "git-branch" },
+            { id: 4, n: "故事分鏡", i: "book-open" },
+            { id: 5, n: "計畫書", i: "file-text" }
+        ];
+
+        document.getElementById('nav-indicator').innerHTML = steps.map((s, idx) => `
+            <div class="flex items-center flex-shrink-0">
+                <div class="flex flex-col items-center mx-2 ${state.step >= s.id ? 'text-indigo-600' : 'text-slate-400'}">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${state.step >= s.id ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' : 'bg-slate-100'}">
+                        <i data-lucide="${s.i}" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-xs mt-2 font-bold">${s.n}</span>
+                </div>
+                ${idx < 4 ? '<i data-lucide="chevron-right" class="text-slate-300 mx-2"></i>' : ''}
+            </div>
+        `).join('');
+
+        const container = document.getElementById('step-content');
+
+        // Step 1 UI - 生成 50 個關鍵字
+        if (state.step === 1) {
+            const prompt = `請針對設計主題『${state.topic || "【尚未填寫主題】"}』進行第一階段的設計思考發想。請扮演專業的交互質性分析（IQA）開放編碼專家，列出 50 個與此主題相關的具體視覺元素、傳統或現代文化符碼、可能整合的多媒體技術、情感聯想或場域感受關鍵字。
+
+請務必嚴格以繁體中文半形逗號（,）分隔的形式回傳，不要有任何 Markdown 代碼包裝、標點符號或任何額外的解釋。格式例如：
+關鍵字一,關鍵字二,關鍵字三`;
+
+            container.innerHTML = `
+                <div class="space-y-4 animate-fade-in">
+                    <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <i data-lucide="sparkles" class="text-indigo-500"></i> 1. 確立探索領域
+                    </h2>
+                    <p class="text-slate-500 text-sm">請輸入課程想發展或探索的專案方向：</p>
+                    <textarea id="topic" class="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-400 outline-none text-slate-700 shadow-sm transition" rows="2" placeholder="例如：台南府城廟宇文化與多媒體動態互動裝置藝術" oninput="updatePrompt1()">${state.topic}</textarea>
+                    
+                    <!-- AI 提示詞產出區 -->
+                    <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/50 mt-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-indigo-700 flex items-center gap-1">
+                                <i data-lucide="terminal" class="w-4 h-4"></i> 第一步 IQA 開放編碼 AI 提示詞
+                            </span>
+                            <button onclick="copyPrompt('p1-text')" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 shadow-sm transition">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i> 一鍵複製提示詞
+                            </button>
+                        </div>
+                        <p id="p1-text" class="text-xs text-slate-600 leading-relaxed bg-white p-3 rounded-lg border border-indigo-100 select-all max-h-24 overflow-y-auto">${prompt}</p>
+                    </div>
+
+                    <!-- AI 平台傳送門 -->
+                    ${renderAiPortals()}
+
+                    <!-- 匯入貼上區 -->
+                    <div class="bg-slate-100/50 p-4 rounded-xl border mt-4">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">💾 請貼上 AI 生成的 50 個關鍵字（以逗號分隔）：</label>
+                        <textarea id="keywords-paste" class="w-full p-3 bg-white border rounded-xl text-xs outline-none focus:ring-1 focus:ring-indigo-500" rows="3" placeholder="例如：傳統符碼, 光影互動, 歷史溫度, AR導覽, 情感連結..."></textarea>
+                        <div class="flex gap-3 mt-3">
+                            <button onclick="importKeywords()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-1.5 shadow-md">
+                                <i data-lucide="import" class="w-4 h-4"></i> 匯入貼上並進入第二步
+                            </button>
+                            <button onclick="simulateStep1()" class="bg-slate-700 hover:bg-slate-800 text-white px-5 rounded-xl text-sm font-bold transition">
+                                ⚡ 免 AI 快速模擬體驗
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // Step 2 UI - 歸納 4 大維度
+        else if (state.step === 2) {
+            const prompt = `我目前手邊擁有關於設計專題『${state.topic}』的 50 個開放編碼關鍵字：
+${state.keywords.join(', ')}
+
+請扮演交互質性分析（IQA）的心智圖分析專家，進行「主軸編碼」與「歸納編碼」。請將這些關鍵字分類歸納為 4 個最核心的「創意主軸維度（Affinities）」。
+
+請務必嚴格以下列「中文條列格式」回傳（不要 JSON，不要任何 Markdown 標記，直接回傳純文字即可）：
+
+維度一：關鍵字A, 關鍵字B, 關鍵字C
+維度二：關鍵字D, 關鍵字E
+維度三：關鍵字F, 關鍵字G
+維度四：關鍵字H, 關鍵字I`;
+
+            container.innerHTML = `
+                <div class="space-y-4 animate-fade-in">
+                    <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <i data-lucide="tag" class="text-purple-500"></i> 2. IQA 開放編碼結果 (${state.keywords.length} 個關鍵字)
+                    </h2>
+                    <p class="text-slate-500 text-sm">你可以點選卡片上的叉叉刪除，或在最下方手動追加新概念。</p>
+                    
+                    <div class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto p-3 bg-white border rounded-xl custom-scrollbar">
+                        ${state.keywords.map((k, i) => `
+                            <span class="inline-flex items-center bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-indigo-100/50 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 transition-colors">
+                                ${k}
+                                <button onclick="removeKeyword(${i})" class="ml-1 text-indigo-400 hover:text-rose-500 transition-colors">
+                                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </span>
+                        `).join('')}
+                    </div>
+
+                    <div class="flex gap-2 bg-slate-100/50 p-1.5 rounded-xl">
+                        <input id="custom-keyword" class="flex-1 p-2 bg-white border rounded-lg text-sm focus:outline-none" placeholder="自訂手動追加編碼關鍵字...">
+                        <button onclick="addCustomKeyword()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition">追加</button>
+                    </div>
+
+                    <!-- AI 提示詞產出區 -->
+                    <div class="bg-purple-50/50 p-4 rounded-xl border border-purple-100/50 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-purple-700 flex items-center gap-1">
+                                <i data-lucide="terminal" class="w-4 h-4"></i> 第二步 IQA 心智圖分類 AI 提示詞
+                            </span>
+                            <button onclick="copyPrompt('p2-text')" class="text-xs bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 shadow-sm transition">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i> 一鍵複製提示詞
+                            </button>
+                        </div>
+                        <p id="p2-text" class="text-xs text-slate-600 leading-relaxed bg-white p-3 rounded-lg border border-purple-100 select-all max-h-24 overflow-y-auto whitespace-pre-line">${prompt}</p>
+                    </div>
+
+                    <!-- AI 平台傳送門 -->
+                    ${renderAiPortals()}
+
+                    <!-- 匯入貼上區 -->
+                    <div class="bg-slate-100/50 p-4 rounded-xl border">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">💾 請貼上 AI 歸納後的純文字維度清單：</label>
+                        <textarea id="affinities-paste" class="w-full p-3 bg-white border rounded-xl text-xs outline-none focus:ring-1 focus:ring-indigo-500" rows="4" placeholder="格式如：&#10;視覺與文化因子：傳統符碼, 老街重塑, 數位剪紙&#10;數位互動技術：AR導覽, 智慧導覽, 虛實整合&#10;..."></textarea>
+                        <div class="flex gap-3 mt-3">
+                            <button onclick="importAffinities()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-1.5 shadow-md">
+                                <i data-lucide="import" class="w-4 h-4"></i> 匯入心智圖並進入第三步
+                            </button>
+                            <button onclick="simulateStep2()" class="bg-slate-700 hover:bg-slate-800 text-white px-5 rounded-xl text-sm font-bold transition">
+                                ⚡ 快速模擬體驗
+                            </button>
+                            <button onclick="backStep(1)" class="border border-slate-200 hover:bg-slate-50 text-slate-600 px-4 rounded-xl text-sm font-bold transition">返回</button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // Step 3 UI - 寫故事與分析
+        else if (state.step === 3) {
+            const prompt = `我目前準備發展一個名為『${state.specificTheme || "【請輸入核心專題名稱】"}』的數位多媒體互動專案。本專案經過 IQA 心智圖收斂後的維度結構如下：
+${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n')}
+
+請扮演創意思考導師，以此主題與維度架構為核心，為我產出計畫書草案：
+1. 一個充滿人文故事溫度、結合科技互動的「背景故事」(約 200 字)。
+2. 此主題欲解決的現實或心理層面的「痛點分析 (Problem)」。
+3. 具體應用的多媒體與「技術解方 (Solution)」。
+
+請務必嚴格以下列格式回傳（使用中文標題框，不要 Markdown，不要 JSON）：
+
+【背景故事】
+（故事內容寫在此處...）
+
+【痛點分析】
+（欲解決的痛點原因與現象寫在此處...）
+
+【技術解方】
+（具體整合的互動設計與多媒體技術解方寫在此處...）`;
+
+            container.innerHTML = `
+                <div class="space-y-4 animate-fade-in">
+                    <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <i data-lucide="git-pull-request" class="text-pink-500"></i> 3. 創意心智圖架構 (Affinities)
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
+                        ${(state.affinities || []).map(a => `
+                            <div class="bg-white border border-slate-100 p-3 rounded-xl shadow-sm">
+                                <h3 class="font-bold text-indigo-700 border-b border-indigo-50 pb-1.5 mb-1.5 flex items-center gap-1">
+                                    <i data-lucide="folder-open" class="w-4 h-4 text-indigo-500"></i> ${a.category} (${a.items.length})
+                                </h3>
+                                <div class="flex flex-wrap gap-1">
+                                    ${a.items.map(item => `<span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[11px] font-medium">${item}</span>`).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="bg-indigo-50/40 p-4 rounded-xl border border-indigo-100/30 mt-3">
+                        <label class="block font-bold text-indigo-900 text-sm mb-1.5">🎯 請收斂出一個具體的設計專題核心名稱：</label>
+                        <p class="text-[11px] text-indigo-500 mb-2">結合心智圖的維度，精煉出具體的產品/解謎/展演名稱。</p>
+                        <input id="theme" class="w-full p-3 border border-indigo-100 rounded-xl focus:ring-2 focus:ring-indigo-400 outline-none text-sm" placeholder="例如：尋找記憶之光：結合 AR 的府城廟宇實境傳奇探索遊戲" value="${state.specificTheme}" oninput="updatePrompt3()">
+                    </div>
+
+                    <!-- AI 提示詞產出區 -->
+                    <div class="bg-pink-50/50 p-4 rounded-xl border border-pink-100/50 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-pink-700 flex items-center gap-1">
+                                <i data-lucide="terminal" class="w-4 h-4"></i> 第三步 故事故事背景與痛點 AI 提示詞
+                            </span>
+                            <button onclick="copyPrompt('p3-text')" class="text-xs bg-pink-600 hover:bg-pink-700 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 shadow-sm transition">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i> 一鍵複製提示詞
+                            </button>
+                        </div>
+                        <p id="p3-text" class="text-xs text-slate-600 leading-relaxed bg-white p-3 rounded-lg border border-pink-100 select-all max-h-24 overflow-y-auto whitespace-pre-line">${prompt}</p>
+                    </div>
+
+                    <!-- AI 平台傳送門 -->
+                    ${renderAiPortals()}
+
+                    <!-- 匯入貼上區 -->
+                    <div class="bg-slate-100/50 p-4 rounded-xl border">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">💾 請貼上 AI 產生的故事與解方文字內容：</label>
+                        <textarea id="story-paste" class="w-full p-3 bg-white border rounded-xl text-xs outline-none focus:ring-1 focus:ring-indigo-500" rows="5" placeholder="請將包含【背景故事】、【痛點分析】、【技術解方】的 AI 回傳內容貼於此..."></textarea>
+                        <div class="flex gap-3 mt-3">
+                            <button onclick="importStory()" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-1.5 shadow-md">
+                                <i data-lucide="import" class="w-4 h-4"></i> 匯入故事與計畫書
+                            </button>
+                            <button onclick="simulateStep3()" class="bg-slate-700 hover:bg-slate-800 text-white px-5 rounded-xl text-sm font-bold transition">
+                                ⚡ 快速模擬體驗
+                            </button>
+                            <button onclick="backStep(2)" class="border border-slate-200 hover:bg-slate-50 text-slate-600 px-4 rounded-xl text-sm font-bold transition">返回</button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // Step 4 UI - 故事與 Storyboard
+        else if (state.step === 4) {
+            container.innerHTML = `
+                <div class="space-y-6 animate-fade-in">
+                    <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <i data-lucide="clapperboard" class="text-rose-500"></i> 4. 背景故事與 3 格互動分鏡 (Storyboard)
+                    </h2>
+                    
+                    <div class="bg-amber-50/50 border border-amber-100 p-5 rounded-xl">
+                        <h3 class="font-bold text-amber-800 text-base mb-2 flex items-center gap-1.5">
+                            <i data-lucide="scroll" class="w-5 h-5"></i> 核心背景故事設定：
+                        </h3>
+                        <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">${state.story}</p>
+                    </div>
+
+                    <h3 class="font-bold text-slate-800 text-base -mb-2">🎬 專題 Storyboard 互動流程圖</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white border p-4 rounded-xl shadow-sm text-center">
+                            <div class="h-20 bg-indigo-50 rounded-lg flex flex-col items-center justify-center text-indigo-500 mb-3">
+                                <i data-lucide="log-in" class="w-7 h-7"></i>
+                                <span class="text-[10px] font-bold mt-1">場景 1 (導入)</span>
+                            </div>
+                            <h4 class="font-bold text-sm text-slate-800">第一格分鏡：文化喚醒</h4>
+                            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">使用者走近歷史場域時，微縮數位感應燈座被步伐輕輕喚醒，亮起微光，吸引使用者上前探索與開啟手機裝置。</p>
+                        </div>
+                        <div class="bg-white border p-4 rounded-xl shadow-sm text-center">
+                            <div class="h-20 bg-purple-50 rounded-lg flex flex-col items-center justify-center text-purple-500 mb-3">
+                                <i data-lucide="smartphone" class="w-7 h-7 animate-bounce"></i>
+                                <span class="text-[10px] font-bold mt-1">場景 2 (探索)</span>
+                            </div>
+                            <h4 class="font-bold text-sm text-slate-800">第二格分鏡：虛實 AR 探索</h4>
+                            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">使用者手持行動裝置掃描廟宇或古蹟的數位剪紙，空氣中擴增實境（AR）的光影動畫緩緩浮現、講述歲月痕跡。</p>
+                        </div>
+                        <div class="bg-white border p-4 rounded-xl shadow-sm text-center">
+                            <div class="h-20 bg-rose-50 rounded-lg flex flex-col items-center justify-center text-rose-500 mb-3">
+                                <i data-lucide="award" class="w-7 h-7"></i>
+                                <span class="text-[10px] font-bold mt-1">場景 3 (昇華)</span>
+                            </div>
+                            <h4 class="font-bold text-sm text-slate-800">第三格分鏡：情感回饋</h4>
+                            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">完成探索後，使用者手機收到特製的傳統文化典藏卡片，解鎖專屬的集體文化印記，並可上傳社群共享共鳴。</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="backStep(3)" class="w-1/3 border border-slate-200 hover:bg-slate-50 text-slate-600 py-3 rounded-xl font-bold transition">返回上一頁</button>
+                        <button onclick="goStep5()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-rose-100 transition flex items-center justify-center gap-1.5">
+                            前進計畫書彙整頁面 <i data-lucide="file-check" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>`;
+        }
+
+        // Step 5 UI - 最終成果與下載
+        else if (state.step === 5) {
+            container.innerHTML = `
+                <div class="space-y-6 animate-fade-in">
+                    <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <i data-lucide="file-check-2" class="text-emerald-500"></i> 5. 專題計劃草案彙整
+                    </h2>
+                    
+                    <div class="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                        <div>
+                            <span class="text-[11px] font-bold text-indigo-600 uppercase tracking-wider">專案主題 Theme</span>
+                            <h3 class="text-lg font-bold text-slate-800 mt-0.5">${state.specificTheme}</h3>
+                        </div>
+                        <hr class="border-slate-100">
+                        <div>
+                            <span class="text-[11px] font-bold text-purple-600 uppercase tracking-wider">一、 設計故事背景</span>
+                            <p class="text-sm text-slate-600 leading-relaxed mt-1">${state.story}</p>
+                        </div>
+                        <hr class="border-slate-100">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-rose-50/30 p-4 border border-rose-100/50 rounded-xl">
+                                <span class="text-[11px] font-bold text-rose-600 uppercase tracking-wider">二、 欲解決之痛點 (Problem)</span>
+                                <p class="text-xs text-slate-600 leading-relaxed mt-1">${state.problem}</p>
+                            </div>
+                            <div class="bg-emerald-50/30 p-4 border border-emerald-100/50 rounded-xl">
+                                <span class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">三、 多媒體技術解方 (Solution)</span>
+                                <p class="text-xs text-slate-600 leading-relaxed mt-1">${state.solution}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button onclick="downloadTxt()" class="bg-slate-700 hover:bg-slate-800 text-white py-3 rounded-xl font-bold shadow-md transition flex items-center justify-center gap-2">
+                            <i data-lucide="download" class="w-4 h-4"></i> 下載 TXT 筆記
+                        </button>
+                        <button onclick="downloadDoc()" class="bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold shadow-md transition flex items-center justify-center gap-2">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> 下載 Word 文件 (.doc)
+                        </button>
+                        <button onclick="location.reload()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> 重新開始
+                        </button>
+                    </div>
+                </div>`;
+        }
+
+        // 刷新圖示
+        lucide.createIcons();
+    }
+
+    // 5. 渲染免費 AI 平台跳轉門
+    function renderAiPortals() {
+        return `
+        <div class="bg-white p-4 rounded-xl border border-slate-200 mt-4 space-y-2">
+            <span class="text-xs font-bold text-slate-600 block mb-1">🔗 請複製上方提示詞，然後點選任何一個免費 AI 平台：</span>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <a href="https://chatgpt.com/" target="_blank" class="flex items-center justify-center gap-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 font-bold py-2 px-3 rounded-lg text-xs transition shadow-sm">
+                    💬 ChatGPT
+                </a>
+                <a href="https://gemini.google.com/" target="_blank" class="flex items-center justify-center gap-1 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 font-bold py-2 px-3 rounded-lg text-xs transition shadow-sm">
+                    🌌 Gemini
+                </a>
+                <a href="https://claude.ai/" target="_blank" class="flex items-center justify-center gap-1 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold py-2 px-3 rounded-lg text-xs transition shadow-sm">
+                    🟠 Claude
+                </a>
+                <a href="https://copilot.microsoft.com/" target="_blank" class="flex items-center justify-center gap-1 bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 font-bold py-2 px-3 rounded-lg text-xs transition shadow-sm">
+                    🤖 Copilot
+                </a>
+            </div>
+        </div>`;
+    }
+
+    // 6. 動態引導文案更新機制
+    function updatePrompt1() {
+        const topicVal = document.getElementById('topic').value.trim();
+        state.topic = topicVal;
+        const p1Text = document.getElementById('p1-text');
+        if (p1Text) {
+            p1Text.innerText = `請針對設計主題『${topicVal || "【尚未填寫主題】"}』進行第一階段的設計思考發想。請扮演專業的交互質性分析（IQA）開放編碼專家，列出 50 個與此主題相關的具體視覺元素、傳統或現代文化符碼、可能整合的多媒體技術、情感聯想或場域感受關鍵字。
+
+請務必嚴格以繁體中文半形逗號（,）分隔的形式回傳，不要有任何 Markdown 代碼包裝、標點符號或任何額外的解釋。格式例如：
+關鍵字一,關鍵字二,關鍵字三`;
+        }
+    }
+
+    function updatePrompt3() {
+        const themeVal = document.getElementById('theme').value.trim();
+        state.specificTheme = themeVal;
+        const p3Text = document.getElementById('p3-text');
+        if (p3Text) {
+            p3Text.innerText = `我目前準備發展一個名為『${themeVal || "【請輸入核心專題名稱】"}』的數位多媒體互動專案。本專案經過 IQA 心智圖收斂後的維度結構如下：
+${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n')}
+
+請扮演創意思考導師，以此主題與維度架構為核心，為我產出計畫書草案：
+1. 一個充滿人文故事溫度、結合科技互動的「背景故事」(約 200 字)。
+2. 此主題欲解決的現實或心理層面的「痛點分析 (Problem)」。
+3. 具體應用的多媒體與「技術解方 (Solution)」。
+
+請務必嚴格以下列格式回傳（使用中文標題框，不要 Markdown，不要 JSON）：
+
+【背景故事】
+（故事內容寫在此處...）
+
+【痛點分析】
+（欲解決的痛點原因與現象寫在此處...）
+
+【技術解方】
+（具體整合的互動設計與多媒體技術解方寫在此處...）`;
+        }
+    }
+
+    function copyPrompt(id) {
+        const text = document.getElementById(id).innerText;
+        copyText(text);
+    }
+
+    // 7. 資料匯入與中文文本智慧解析邏輯
+    function importKeywords() {
+        const val = document.getElementById('keywords-paste').value.trim();
+        if (!val) {
+            showToast("請貼上 AI 生成的 50 個關鍵字！", "error");
+            return;
+        }
+        // 使用逗號/頓號進行分割，並過濾多餘空格
+        const kws = val.split(/[,，、\s\n]+/).map(k => k.trim()).filter(k => k !== '');
+        if (kws.length < 5) {
+            showToast("關鍵字太少或格式不對，請確保以逗號分隔！", "error");
+            return;
+        }
+        state.keywords = kws;
+        state.step = 2;
+        render();
+        showToast("50 組創意關鍵字解析匯入成功！");
+    }
+
+    // 🧠 智慧心智圖中文文本解析器
+    function importAffinities() {
+        const val = document.getElementById('affinities-paste').value.trim();
+        if (!val) {
+            showToast("請貼上 AI 分析回傳的心智圖清單！", "error");
+            return;
+        }
+        
+        const lines = val.split('\n').map(l => l.trim()).filter(l => l !== '');
+        const affinities = [];
+        
+        lines.forEach(line => {
+            // 自動偵測中文全形或半形冒號
+            const colonIdx = line.indexOf('：') !== -1 ? line.indexOf('：') : line.indexOf(':');
+            if (colonIdx !== -1) {
+                let category = line.substring(0, colonIdx).trim();
+                // 智慧移除行首編號（例如 '1. '、'一、'、'- ' 等）
+                category = category.replace(/^\d+[\.\、\s]*/, '').replace(/^[-*+\s]*/, '').replace(/^[一二三四五六七八九十]+、/, '').trim();
+                
+                const itemsStr = line.substring(colonIdx + 1).trim();
+                const items = itemsStr.split(/[,，、\s]+/).map(i => i.trim()).filter(i => i !== '');
+                
+                if (category && items.length > 0) {
+                    affinities.push({ category, items });
+                }
+            }
+        });
+
+        if (affinities.length === 0) {
+            showToast("解析失敗，請確保每一行的格式類似「視覺維度：傳統符碼, 數位剪紙」", "error");
+            return;
+        }
+        
+        state.affinities = affinities;
+        state.step = 3;
+        render();
+        showToast("心智圖維度解析匯入成功！");
+    }
+
+    // 🧠 智慧計畫書段落中文文本解析器
+    function importStory() {
+        const val = document.getElementById('story-paste').value.trim();
+        if (!val) {
+            showToast("請貼上 AI 生成的故事與痛點解決方案！", "error");
+            return;
+        }
+
+        const lines = val.split('\n');
+        let storyContent = "";
+        let problemContent = "";
+        let solutionContent = "";
+        let currentHeader = "";
+        
+        lines.forEach(line => {
+            const l = line.trim();
+            // 自動模糊比對段落標籤
+            if (l.includes("【背景故事】") || l.includes("背景故事")) {
+                currentHeader = "story";
+            } else if (l.includes("【痛點分析】") || l.includes("痛點分析")) {
+                currentHeader = "problem";
+            } else if (l.includes("【技術解方】") || l.includes("技術解方") || l.includes("技術解決方案")) {
+                currentHeader = "solution";
+            } else if (l !== "") {
+                if (currentHeader === "story") storyContent += line + "\n";
+                else if (currentHeader === "problem") problemContent += line + "\n";
+                else if (currentHeader === "solution") solutionContent += line + "\n";
+            }
+        });
+        
+        const story = storyContent.trim();
+        const problem = problemContent.trim();
+        const solution = solutionContent.trim();
+        
+        if (!story) {
+            showToast("解析失敗！未能辨識到【背景故事】段落，請確認貼上的格式是否正確。", "error");
+            return;
+        }
+        
+        state.story = story;
+        state.problem = problem || "無提供痛點分析";
+        state.solution = solution || "無提供技術解決方案";
+        state.step = 4;
+        render();
+        showToast("人文故事與技術解方解析匯入成功！");
+    }
+
+    // 8. 離線本地快速模擬體驗
+    function simulateStep1() {
+        const topicEl = document.getElementById('topic');
+        state.topic = topicEl ? topicEl.value.trim() : "設計與多媒體";
+        if (!state.topic) {
+            showError("請輸入一個設計主題！");
+            return;
+        }
+        showLoader("快速模擬本地交互編碼中...");
+        setTimeout(() => {
+            state.keywords = [...mockKeywords];
+            state.step = 2;
+            hideLoader();
+            render();
+            showToast("已成功載入本機 50 組模擬關鍵字！");
+        }, 1200);
+    }
+
+    function simulateStep2() {
+        showLoader("快速模擬 IQA 交互分類維度中...");
+        setTimeout(() => {
+            const categories = [
+                { category: "視覺與傳統文化因子 (Visual & Cult)", items: [] },
+                { category: "數位多媒體科技因子 (Interactive Tech)", items: [] },
+                { category: "老街歷史與時間敘事 (History & Narrative)", items: [] },
+                { category: "情感連結共鳴設計 (UX & Emotional)", items: [] }
+            ];
+            state.keywords.forEach((kw, index) => {
+                categories[index % 4].items.push(kw);
+            });
+            state.affinities = categories;
+            state.step = 3;
+            hideLoader();
+            render();
+            showToast("本機心智圖歸納完成！");
+        }, 1200);
+    }
+
+    function simulateStep3() {
+        const themeEl = document.getElementById('theme');
+        state.specificTheme = themeEl ? themeEl.value.trim() : "本機創新互動設計";
+        if (!state.specificTheme) {
+            showToast("請輸入核心專案主題名稱！", "error");
+            return;
+        }
+        showLoader("快速模擬生成人文設計故事...");
+        setTimeout(() => {
+            state.story = `在冷冽的現代科技洪流中，『${state.specificTheme}』專案悄悄啟動。我們嘗試在古老符碼與冷冽的程式碼之間，牽起一條溫暖的光線。當手持行動裝置的使用者漫步於歷史空間時，數位感應元件隨著腳步喚醒微小微光，虛擬的光影藝術瞬間在半空中與文物相互編織，開啟了一場打破時光藩籬的跨世代對話。這不只是一場技術展示，更是讓逐漸被式微的在地文化在新世代心中再度燃燒。`;
+            state.problem = "傳統文化推廣大多侷限於靜態的「看板式」陳列，無法吸引習慣主動吸收、對感官與多媒體高度依賴的新世代，導致歷史傳承面臨感官斷層。";
+            state.solution = "整合物聯網感應微光裝置與擴增實境 (AR) 技術，建立融入式解謎互動遊戲，將現實與虛實重疊，讓被動灌輸轉化為主動探尋，激發情感。";
+            state.step = 4;
+            hideLoader();
+            render();
+            showToast("本機情感背景故事架構完成！");
+        }, 1200);
+    }
+
+    function removeKeyword(idx) {
+        state.keywords.splice(idx, 1);
+        render();
+    }
+
+    function addCustomKeyword() {
+        const input = document.getElementById('custom-keyword');
+        if (input) {
+            const val = input.value.trim();
+            if (val) {
+                state.keywords.push(val);
+                input.value = "";
+                render();
+            }
+        }
+    }
+
+    function goStep5() {
+        state.step = 5;
+        render();
+    }
+
+    function backStep(s) {
+        state.step = s;
+        render();
+    }
+
+    // 9. 檔案下載功能
+    function downloadTxt() {
+        const text = `【IQA 創意思考成果計畫書】\n\n專案主題：${state.specificTheme}\n\n[一、背景故事]\n${state.story}\n\n[二、欲解決之痛點 Problem]\n${state.problem}\n\n[三、多媒體與技術解方 Solution]\n${state.solution}`;
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${state.specificTheme || 'IQA專案計畫書'}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadDoc() {
+        const title = state.specificTheme || "IQA專案計畫書";
+        const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body { font-family: 'PMingLiU', 'Noto Sans TC', Arial, sans-serif; line-height: 1.6; color: #333; }
+                h1 { color: #4338ca; text-align: center; font-size: 24pt; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+                h2 { color: #6d28d9; font-size: 16pt; margin-top: 24px; border-left: 5px solid #6d28d9; padding-left: 10px; }
+                .card { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+                .grid { display: table; width: 100%; table-layout: fixed; }
+                .col { display: table-cell; width: 50%; padding: 10px; vertical-align: top; }
+                .theme { text-align: center; font-size: 14pt; font-weight: bold; background-color: #e0e7ff; padding: 10px; border-radius: 6px; }
+            </style>
+        </head>
+        <body>
+            <h1>IQA 創意思考引導系統 — 專題成果計畫書</h1>
+            <div class="theme">專案主題：${state.specificTheme}</div>
+            
+            <h2>一、 核心背景故事設定</h2>
+            <div class="card">${state.story.replace(/\n/g, '<br>')}</div>
+            
+            <h2>二、 創意思維與群組分類 (Affinities)</h2>
+            <div class="card">
+                ${(state.affinities || []).map(a => `<p><strong>${a.category || "未命名維度"}：</strong>${(a.items || []).join(', ')}</p>`).join('')}
+            </div>
+
+            <h2>三、 痛點與解決方案</h2>
+            <div class="grid">
+                <div class="col" style="background-color: #fef2f2; border-radius: 8px;">
+                    <strong>欲解決之痛點 (Problem)：</strong>
+                    <p>${state.problem}</p>
+                </div>
+                <div class="col" style="background-color: #ecfdf5; border-radius: 8px; margin-left: 10px;">
+                    <strong>多媒體與技術解方 (Solution)：</strong>
+                    <p>${state.solution}</p>
+                </div>
+            </div>
+        </body>
+        </html>`;
+
+        const blob = new Blob(['\ufeff' + html], { type: 'application/msword;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${title}.doc`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function showLoader(text) {
+        const loaderText = document.getElementById('loader-text');
+        const loader = document.getElementById('loader');
+        if (loaderText) loaderText.innerText = text;
+        if (loader) loader.classList.remove('hidden');
+    }
+
+    function hideLoader() {
+        const loader = document.getElementById('loader');
+        if (loader) loader.classList.add('hidden');
+    }
+
+    function showError(msg) {
+        showToast(msg, "error");
+    }
+
+    // 啟動首頁
+    render();
+</script>
+</body>
+</html>
