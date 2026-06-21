@@ -93,7 +93,7 @@
         affinities: [],       // 結構: [{ category: "維度", items: ["關鍵字", ...] }]
         specificTheme: "",    // 核心主題
         
-        // 針對「互動介面設計 (UI/UX)」重新定義的 8 大專案計畫書章節
+        // 針對「互動介面設計 (UI/UX)」重新定義的 9 大專案計畫書章節 (新增第九章視覺提示詞)
         summary: "",          // 一、專案摘要與設計願景
         background: "",       // 二、使用者痛點與介面需求分析
         persona: "",          // 三、資訊架構與介面流程設計
@@ -101,7 +101,8 @@
         blueprint: "",        // 五、核心互動機制與動效設計
         prototype: "",        // 六、原型開發與高低擬真測試規劃
         business: "",         // 七、系統架構、前端實施與無障礙設計
-        timeline: ""          // 八、介面迭代時程與專案資源編制
+        timeline: "",         // 八、介面迭代時程與專案資源編制
+        visualPrompt: ""      // 九、介面設計視覺風格與 AI 生成提示詞
     };
 
     // 2. 自訂 Toast 提示機制
@@ -139,7 +140,7 @@
         document.body.removeChild(textarea);
     }
 
-    // 4. 智慧生成與更新 Prompt (為「互動介面設計」量身打造的結構)
+    // 4. 智慧生成與更新 Prompt (為「互動介面設計」量身打造，擴充至 9 大章節)
     function generatePrompt1Text() {
         return `請針對介面設計主題『${state.topic || "【尚未填寫主題】"}』進行第一階段的設計思考發想。請扮演專業的交互質性分析（IQA）開放編碼專家，列出 50 個與此介面設計主題相關的具體 UI 元件、操作手勢、互動反饋、視覺風格、無障礙規範、情感聯想或介面易用性（Usability）關鍵字。
 
@@ -165,7 +166,7 @@ ${state.keywords.join(', ')}
         return `我目前準備發展一個名為『${state.specificTheme || "【請輸入核心介面專案名稱】"}』的互動介面設計（UI/UX）與數位原型專案。本專案經過 IQA 心智圖收斂後的維度結構如下：
 ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n')}
 
-請扮演資深的「互動介面設計顧問 (Lead UI/UX Designer)」與「專案計畫書專家」，以此主題與維度架構為核心，為我產出「可供正式提案」的專業「互動介面設計專案計畫書」。請務必嚴格以下列「中文標籤標題」回傳（不要 Markdown，不要 JSON，確保段落扎實、採用 UI/UX 專業術語且符合正式提案水準）：
+請扮演資神的「互動介面設計顧問 (Lead UI/UX Designer)」與「專案計畫書專家」，以此主題與維度架構為核心，為我產出「可供正式提案」的專業「互動介面設計專案計畫書」。請務必嚴格以下列「中文標籤標題」回傳（不要 Markdown，不要 JSON，確保段落扎實、採用 UI/UX 專業術語且符合正式提案水準）：
 
 【一、專案摘要與設計願景】
 （寫一段約 250 字的介面計畫摘要，描述設計願景、產品核心功能與 30 秒電梯簡報亮點）
@@ -189,7 +190,10 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
 （規劃本專案的技術堆疊，並深入探討符合數位無障礙規範 Accessibility / WCAG 之高齡或跨世代介面友善設計）
 
 【八、介面迭代時程與專案資源編制】
-（列出執行此互動介面設計專案的迭代時程、甘特圖時序，以及設計團隊所需之跨領域專業角色編制，如 UI/UX 設計師、使用者研究員、前端開發工程師）`;
+（列出執行此互動介面設計專案的迭代時程、甘特圖時序，以及設計團隊所需之跨領域專業角色編制，如 UI/UX 設計師、使用者研究員、前端開發工程師）
+
+【九、介面設計視覺風格與 AI 生成提示詞】
+（針對本專案的介面風格定位，精心撰寫一段專屬的 Midjourney 或 DALL-E 3 英文與中文影像生成提示詞 Prompt，描述其色彩計畫、網格系統、Glassmorphism / Neumorphism 等前沿材質、高擬真 Figma Showcase 排版方式，讓讀者能一鍵複製生成高質感介面設計視覺圖）`;
     }
 
     // 5. 渲染導航
@@ -316,7 +320,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                 </div>`;
         }
 
-        // Step 3 UI - 寫介面計畫書與分析（改版為「互動介面設計」專屬 8 大章節）
+        // Step 3 UI - 寫介面計畫書與分析（改版為「互動介面設計」專屬 9 大章節）
         else if (state.step === 3) {
             container.innerHTML = `
                 <div class="space-y-4 animate-fade-in">
@@ -361,8 +365,8 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
 
                     <!-- 匯入貼上區 -->
                     <div class="bg-slate-100/50 p-4 rounded-xl border">
-                        <label class="block text-sm font-bold text-slate-700 mb-2">💾 請貼上 AI 產生的 8 大正式章節介面計畫書內容：</label>
-                        <textarea id="story-paste" class="w-full p-3 bg-white border rounded-xl text-xs outline-none focus:ring-1 focus:ring-indigo-500" rows="5" placeholder="請將包含【一、...】【二、...】一直到【八、...】的 AI 回傳完整計畫書內容貼於此..."></textarea>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">💾 請貼上 AI 產生的 9 大正式章節介面計畫書內容：</label>
+                        <textarea id="story-paste" class="w-full p-3 bg-white border rounded-xl text-xs outline-none focus:ring-1 focus:ring-indigo-500" rows="5" placeholder="請將包含【一、...】【二、...】一直到【九、...】的 AI 回傳完整計畫書內容貼於此..."></textarea>
                         <div class="flex gap-3 mt-3">
                             <button onclick="importStory()" class="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-1.5 shadow-md">
                                 <i data-lucide="import" class="w-4 h-4"></i> 匯入提案計畫並進入第四步
@@ -431,7 +435,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                 </div>`;
         }
 
-        // Step 5 UI - 最終 8 大介面設計章節成果展現與下載
+        // Step 5 UI - 最終 9 大介面設計章節成果展現與下載
         else if (state.step === 5) {
             container.innerHTML = `
                 <div class="space-y-6 animate-fade-in">
@@ -507,6 +511,20 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                             </span>
                             <p class="text-sm text-slate-600 leading-relaxed mt-1.5 bg-slate-50/50 p-3 rounded-lg border border-slate-100">${state.timeline}</p>
                         </div>
+
+                        <div>
+                            <span class="text-[11px] font-bold text-violet-600 uppercase tracking-wider flex items-center gap-1">
+                                <i data-lucide="image" class="w-3.5 h-3.5"></i> 九、 介面設計視覺風格與 AI 生成提示詞
+                            </span>
+                            <div class="text-sm text-slate-600 leading-relaxed mt-1.5 bg-violet-50/40 p-4 rounded-xl border border-violet-100 relative group">
+                                <button onclick="copyPromptTextContent()" class="absolute top-3 right-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-2 py-1 rounded text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> 複製 AI 繪圖提示詞
+                                </button>
+                                <div id="visual-prompt-text" class="whitespace-pre-line pt-4 text-justify">
+                                    ${state.visualPrompt}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -573,7 +591,15 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
         copyText(text);
     }
 
-    // 8. 資料匯入與中文文本智慧解析邏輯 (解析 8 大服務設計章節)
+    function copyPromptTextContent() {
+        // 抓取包含英文 Midjourney 提示詞的整個容器文字
+        const container = document.getElementById('visual-prompt-text');
+        if (container) {
+            copyText(container.innerText.trim());
+        }
+    }
+
+    // 8. 資料匯入與中文文本智慧解析邏輯 (解析 9 大章節)
     function importKeywords() {
         const val = document.getElementById('keywords-paste').value.trim();
         if (!val) {
@@ -627,7 +653,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
         showToast("心智圖維度解析匯入成功！");
     }
 
-    // 🧠 智慧計畫書 8 大段落中文文本解析器 (針對「互動介面設計」優化匹配)
+    // 🧠 智慧計畫書 9 大段落中文文本解析器 (整合高容錯、智慧型中文文本解析演算法)
     function importStory() {
         const val = document.getElementById('story-paste').value.trim();
         if (!val) {
@@ -644,12 +670,13 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
         let prototypeContent = "";
         let businessContent = "";
         let timelineContent = "";
+        let visualPromptContent = "";
         let currentHeader = "";
         
         // 更健全且高容錯的標題偵測機制
         function detectHeader(line) {
             const l = line.trim();
-            if (l.length > 50) return null; // 標題行不應超過 50 字，有效防止把含有專屬名詞的長內文誤判為新章節
+            if (l.length > 50) return null; // 標題行不應超過 50 字，有效防止內文高頻字誤判
 
             // 移除行首標記、Markdown 標籤、星號與括號等，將文字正規化便於匹配
             const clean = l.replace(/[\*#_\[\]【】\-\s\d\.\、]/g, "");
@@ -686,8 +713,12 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
             if (clean.includes("迭代時程") || clean.includes("資源編制") || clean.includes("甘特") || clean.includes("時程與資源")) {
                 return "timeline";
             }
+            // 九、介面設計視覺風格與 AI 生成提示詞
+            if (clean.includes("風格與AI") || clean.includes("生成提示詞") || clean.includes("影像生成") || clean.includes("視覺風格") || clean.includes("AI生成") || clean.includes("Midjourney") || clean.includes("DALL")) {
+                return "visualPrompt";
+            }
 
-            // 備用匹配：如果使用者刪改了標題文字，則改用行首的中文數字序號比對
+            // 備用匹配：如果使用者刪改了標題文字，則改用行首的數字序號比對
             const cleanWithNum = l.replace(/[\*#_\[\]【】\-\s]/g, "");
             if (cleanWithNum.match(/^[一1I]、/) || cleanWithNum.startsWith("第一章") || cleanWithNum.startsWith("第一、") || cleanWithNum.startsWith("1.")) return "summary";
             if (cleanWithNum.match(/^[二2]、/) || cleanWithNum.startsWith("第二章") || cleanWithNum.startsWith("第二、") || cleanWithNum.startsWith("2.")) return "background";
@@ -697,6 +728,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
             if (cleanWithNum.match(/^[六6]、/) || cleanWithNum.startsWith("第六章") || cleanWithNum.startsWith("第六、") || cleanWithNum.startsWith("6.")) return "prototype";
             if (cleanWithNum.match(/^[七7]、/) || cleanWithNum.startsWith("第七章") || cleanWithNum.startsWith("第七、") || cleanWithNum.startsWith("7.")) return "business";
             if (cleanWithNum.match(/^[八8]、/) || cleanWithNum.startsWith("第八章") || cleanWithNum.startsWith("第八、") || cleanWithNum.startsWith("8.")) return "timeline";
+            if (cleanWithNum.match(/^[九9]、/) || cleanWithNum.startsWith("第九章") || cleanWithNum.startsWith("第九、") || cleanWithNum.startsWith("9.")) return "visualPrompt";
 
             return null;
         }
@@ -715,6 +747,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                 else if (currentHeader === "prototype") prototypeContent += line + "\n";
                 else if (currentHeader === "business") businessContent += line + "\n";
                 else if (currentHeader === "timeline") timelineContent += line + "\n";
+                else if (currentHeader === "visualPrompt") visualPromptContent += line + "\n";
             }
         });
         
@@ -732,13 +765,14 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
         state.prototype = prototypeContent.trim() || "無提供原型開發與高低擬真測試規劃。";
         state.business = businessContent.trim() || "無提供系統架構、前端實施與無障礙設計。";
         state.timeline = timelineContent.trim() || "無提供介面迭代時程與專案資源編制。";
+        state.visualPrompt = visualPromptContent.trim() || "無提供介面設計視覺風格與 AI 生成提示詞。";
         
         state.step = 4;
         render();
-        showToast("8 大介面設計章節計畫草案解析匯入成功！");
+        showToast("9 大介面設計章節計畫草案解析匯入成功！");
     }
 
-    // 9. 離線本地快速模擬體驗 (升級為 8 大「互動介面設計」專業提案範例)
+    // 9. 離線本地快速模擬體驗 (升級為 9 大「互動介面設計」專業提案範例)
     function simulateStep1() {
         const topicEl = document.getElementById('topic');
         state.topic = topicEl ? topicEl.value.trim() : "青銀共融高齡社區行動 App 智慧介面設計";
@@ -783,7 +817,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
             showToast("請輸入核心專案主題名稱！", "error");
             return;
         }
-        showLoader("模擬生成 8 大互動介面設計提案計畫書中...");
+        showLoader("模擬生成 9 大互動介面設計提案計畫書中...");
         setTimeout(() => {
             state.summary = `『${state.specificTheme}』是一個專為高齡長者與年輕學子打造的跨世代價值對接行動介面系統。本專案以「資訊降噪」與「極簡直覺操作」為核心願景，捨棄傳統複雜的多階層目錄，以一目了然的「大尺寸卡片式元件」搭配「智慧引導式語音助手」，幫助長者輕鬆發佈傳統手藝或生命故事，並使青年能直覺配對並協助數位轉譯。系統透過微震動與溫暖的微光微交互，在物理操作與數位螢幕間打造前所未有的友善情感共振體驗。`;
             
@@ -801,10 +835,18 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
             
             state.timeline = "Week 1-3：IQA 使用者探索與介面資訊架構 (IA) 整理。Week 4-6：Wireframe 與低擬真原型可用性評估。Week 7-10：設計系統 (Design System) 與高擬真互動原型製作. Week 11-12：雙平台前端實施、WCAG A11y 測試與上線發佈。團隊角色：UI設計師、UX研究員、前端工程師。";
             
+            state.visualPrompt = `【視覺風格設計定位 (Visual Design Directions)】
+本介面採用「溫暖人文(Humanistic Warmth)」與「極簡數位無障礙(A11y Minimalist)」相契合的雙軌風格。配色以代表安心尊嚴的「靛藍色 (#1E3A8A)」為穩固基底，搭配高明度、具備高度易讀性且散發活力的「暖金黃 (#F59E0B)」作為點睛與主體行為召喚色彩，達到 AAA 級對比標準。介面元件採用「微黏土風格(Claymorphism)」與「輕毛玻璃透明度(Light Glassmorphism)」，讓實體感延伸至螢幕中。
+
+【影像生成 AI 專用提示詞 (AI Image Prompt for Midjourney/DALL-E 3)】
+（請複製下方提示詞，貼上至 Midjourney、Stable Diffusion 或 DALL-E 3 生成高擬真設計風格圖）
+
+UI UX mockup showcase of a mobile application named "Time Bank Senior Exchange", clean and minimalist claymorphism and light glassmorphism design system, accessibility-friendly. Bold deep indigo as the dominant background color (#1e3a8a) paired with warm golden yellow accented interaction cards (#f59e0b). Large rounded elements, high contrast typography with exceptional readability. A high-fidelity screen flow of 3 screens displayed elegantly in a Figma presentation mockup. Elegant studio soft lighting, dynamic glass refraction glow, premium grid-based UI layout, modern vector icons. Beautiful technology, ultra-clean design, 8k resolution, photorealistic render --ar 16:9 --v 6.0`;
+            
             state.step = 4;
             hideLoader();
             render();
-            showToast("本機正式提案計畫書 8 大介面設計章節模擬完成！");
+            showToast("本機正式提案計畫書 9 大介面設計章節模擬完成！");
         }, 1200);
     }
 
@@ -835,9 +877,9 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
         render();
     }
 
-    // 10. 檔案下載功能 (全面包含互動介面設計 8 大專業章節)
+    // 10. 檔案下載功能 (全面包含互動介面設計 9 大專業章節)
     function downloadTxt() {
-        const text = `【IQA 互動介面設計專案計畫書草案 (正式提案規格)】\n\n專案主題：${state.specificTheme}\n\n[一、專案摘要與設計願景]\n${state.summary}\n\n[二、使用者痛點與介面需求分析]\n${state.background}\n\n[三、資訊架構與介面流程設計]\n${state.persona}\n\n[四、視覺設計與介面設計系統 (Design System)]\n${state.valueProp}\n\n[五、核心互動機制與動效設計]\n${state.blueprint}\n\n[六、原型開發與高低擬真測試規劃]\n${state.prototype}\n\n[七、系統架構、前端實施與無障礙設計]\n${state.business}\n\n[八、介面迭代時程與專案資源編制]\n${state.timeline}`;
+        const text = `【IQA 互動介面設計專案計畫書草案 (正式提案規格)】\n\n專案主題：${state.specificTheme}\n\n[一、專案摘要與設計願景]\n${state.summary}\n\n[二、使用者痛點與介面需求分析]\n${state.background}\n\n[三、資訊架構與介面流程設計]\n${state.persona}\n\n[四、視覺設計與介面設計系統 (Design System)]\n${state.valueProp}\n\n[五、核心互動機制與動效設計]\n${state.blueprint}\n\n[六、原型開發與高低擬真測試規劃]\n${state.prototype}\n\n[七、系統架構、前端實施與無障礙設計]\n${state.business}\n\n[八、介面迭代時程與專案資源編制]\n${state.timeline}\n\n[九、介面設計視覺風格與 AI 生成提示詞]\n${state.visualPrompt}`;
         const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -893,6 +935,9 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
             <h2>八、 介面迭代時程與專案資源編制 (Interface Iteration Timeline & Team Resources)</h2>
             <div class="card" style="background-color: #fafaf9;">${state.timeline.replace(/\n/g, '<br>')}</div>
 
+            <h2>九、 介面設計視覺風格與 AI 生成提示詞 (Visual Styles & Image Generation Prompt)</h2>
+            <div class="card" style="background-color: #f5f3ff;">${state.visualPrompt.replace(/\n/g, '<br>')}</div>
+
             <h2>附錄、 創意思維編碼矩陣 (Affinities)</h2>
             <div class="card">
                 ${(state.affinities || []).map(a => `<p><strong>${a.category || "維度"}：</strong>${(a.items || []).join(', ')}</p>`).join('')}
@@ -909,6 +954,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
         URL.revokeObjectURL(url);
     }
 
+    // 輔助函式：當彈窗載入時執行
     function showLoader(text) {
         const loaderText = document.getElementById('loader-text');
         const loader = document.getElementById('loader');
