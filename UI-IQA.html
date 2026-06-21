@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
@@ -10,74 +10,69 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=300;400;500;700;900&display=swap');
-
         body {
             font-family: 'Noto Sans TC', sans-serif;
         }
-
         .step-transition {
             transition: all 0.3s ease-in-out;
         }
-
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
-
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 4px;
         }
-
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
         }
-
-            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                background: #94a3b8;
-            }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/40 min-h-screen py-8 px-4 md:py-12">
 
-    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-3xl p-6 md:p-10 border border-slate-100 relative">
-        <!-- 系統標題 -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-700 tracking-tight flex items-center justify-center gap-2 mb-2">
-                <i data-lucide="brain-circuit" class="text-indigo-600 w-8 h-8 md:w-10 md:h-10"></i>
-                IQA 創意思考引導系統
-            </h1>
-            <p class="text-sm md:text-base text-slate-500 font-medium">免 API、免費用！運用 IQA 鷹架與 AI 協作，生成頂級「互動介面設計」專案計畫</p>
-        </div>
-
-        <!-- 5 步驟導航指標 (帶有 Lucide 圖示) -->
-        <div id="nav-indicator" class="flex items-center justify-between mb-8 overflow-x-auto pb-4 border-b border-slate-100 custom-scrollbar">
-            <!-- 由 JavaScript 動態繪製與更新 -->
-        </div>
-
-        <!-- 步驟主要內容 -->
-        <div id="step-content" class="step-transition min-h-[350px] bg-slate-50/50 rounded-2xl border border-slate-100 p-6 md:p-8">
-            <!-- 由 JS 渲染 -->
-        </div>
+<div class="max-w-4xl mx-auto bg-white shadow-xl rounded-3xl p-6 md:p-10 border border-slate-100 relative">
+    <!-- 系統標題 -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-700 tracking-tight flex items-center justify-center gap-2 mb-2">
+            <i data-lucide="brain-circuit" class="text-indigo-600 w-8 h-8 md:w-10 md:h-10"></i>
+            IQA 創意思考引導系統
+        </h1>
+        <p class="text-sm md:text-base text-slate-500 font-medium">免 API、免費用！運用 IQA 鷹架與 AI 協作，生成頂級「互動介面設計」專案計畫</p>
+    </div>
+    
+    <!-- 5 步驟導航指標 (帶有 Lucide 圖示) -->
+    <div id="nav-indicator" class="flex items-center justify-between mb-8 overflow-x-auto pb-4 border-b border-slate-100 custom-scrollbar">
+        <!-- 由 JavaScript 動態繪製與更新 -->
     </div>
 
-    <!-- 頂級自訂通知 Toast 視窗 -->
-    <div id="toast" class="fixed bottom-5 right-5 p-4 rounded-xl shadow-lg text-white font-bold flex items-center gap-2 transition-all duration-300 opacity-0 translate-y-2 pointer-events-none z-50 bg-emerald-600">
-        <i data-lucide="check-circle" class="w-5 h-5"></i>
-        <span id="toast-text">複製成功！</span>
+    <!-- 步驟主要內容 -->
+    <div id="step-content" class="step-transition min-h-[350px] bg-slate-50/50 rounded-2xl border border-slate-100 p-6 md:p-8">
+        <!-- 由 JS 渲染 -->
     </div>
+</div>
 
-    <!-- 智慧生成加載遮罩 -->
-    <div id="loader" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-xs text-center border border-indigo-50">
-            <i data-lucide="loader-2" class="animate-spin text-indigo-600 w-12 h-12 mb-4"></i>
-            <p id="loader-text" class="text-indigo-900 font-bold text-base">正在模擬處理中...</p>
-            <p class="text-xs text-slate-400 mt-2">請稍候，正在為您快速組織創意思維...</p>
-        </div>
+<!-- 頂級自訂通知 Toast 視窗 -->
+<div id="toast" class="fixed bottom-5 right-5 p-4 rounded-xl shadow-lg text-white font-bold flex items-center gap-2 transition-all duration-300 opacity-0 translate-y-2 pointer-events-none z-50 bg-emerald-600">
+    <i data-lucide="check-circle" class="w-5 h-5"></i>
+    <span id="toast-text">複製成功！</span>
+</div>
+
+<!-- 智慧生成加載遮罩 -->
+<div id="loader" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-xs text-center border border-indigo-50">
+        <i data-lucide="loader-2" class="animate-spin text-indigo-600 w-12 h-12 mb-4"></i>
+        <p id="loader-text" class="text-indigo-900 font-bold text-base">正在模擬處理中...</p>
+        <p class="text-xs text-slate-400 mt-2">請稍候，正在為您快速組織創意思維...</p>
     </div>
+</div>
 
-    <script>// 1. 全局狀態管理與模擬資料
+<script>
+    // 1. 全局狀態管理與模擬資料
     const mockKeywords = [
         "使用者旅程", "互動介面", "資訊架構", "手勢操作", "感知反饋",
         "高對比模式", "語音輔助", "UI設計系統", "Wireframe", "動態微交互",
@@ -97,7 +92,7 @@
         keywords: [],
         affinities: [],       // 結構: [{ category: "維度", items: ["關鍵字", ...] }]
         specificTheme: "",    // 核心主題
-
+        
         // 針對「互動介面設計 (UI/UX)」重新定義的 8 大專案計畫書章節
         summary: "",          // 一、專案摘要與設計願景
         background: "",       // 二、使用者痛點與介面需求分析
@@ -115,13 +110,13 @@
         const toastText = document.getElementById('toast-text');
         if (!toast || !toastText) return;
         toastText.innerText = msg;
-
+        
         if (type === 'success') {
             toast.className = "fixed bottom-5 right-5 p-4 rounded-xl shadow-lg text-white font-bold flex items-center gap-2 transition-all duration-300 z-50 bg-emerald-600";
         } else {
             toast.className = "fixed bottom-5 right-5 p-4 rounded-xl shadow-lg text-white font-bold flex items-center gap-2 transition-all duration-300 z-50 bg-rose-600";
         }
-
+        
         toast.classList.remove('opacity-0', 'translate-y-2');
         setTimeout(() => {
             toast.classList.add('opacity-0', 'translate-y-2');
@@ -230,7 +225,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                     </h2>
                     <p class="text-slate-500 text-sm">請輸入您想發展或探索的「互動介面設計」專案方向：</p>
                     <textarea id="topic" class="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-400 outline-none text-slate-700 shadow-sm transition" rows="2" placeholder="例如：青銀共存高齡友善社區共融行動 App 與智慧手勢介面設計" oninput="updatePrompt1()">${state.topic}</textarea>
-
+                    
                     <!-- AI 提示詞產出區 -->
                     <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/50 mt-4 space-y-3">
                         <div class="flex items-center justify-between">
@@ -271,7 +266,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                         <i data-lucide="tag" class="text-purple-500"></i> 2. IQA 介面開放編碼結果 (${state.keywords.length} 個關鍵字)
                     </h2>
                     <p class="text-slate-500 text-sm">你可以點選卡片上的叉叉刪除，或在最下方手動追加新介面概念。</p>
-
+                    
                     <div class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto p-3 bg-white border rounded-xl custom-scrollbar">
                         ${state.keywords.map((k, i) => `
                             <span class="inline-flex items-center bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-indigo-100/50 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 transition-colors">
@@ -328,7 +323,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                     <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
                         <i data-lucide="git-pull-request" class="text-pink-500"></i> 3. 創意介面心智圖架構 (Affinities)
                     </h2>
-
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
                         ${(state.affinities || []).map(a => `
                             <div class="bg-white border border-slate-100 p-3 rounded-xl shadow-sm">
@@ -388,7 +383,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                     <h2 class="font-bold text-xl text-slate-800 flex items-center gap-2">
                         <i data-lucide="panels-top-left" class="text-rose-500"></i> 4. 介面架構與核心畫面流程 Storyboard
                     </h2>
-
+                    
                     <div class="bg-amber-50/50 border border-amber-100 p-5 rounded-xl">
                         <h3 class="font-bold text-amber-800 text-base mb-2 flex items-center gap-1.5">
                             <i data-lucide="scroll" class="w-5 h-5"></i> 核心介面設計願景：
@@ -448,15 +443,15 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                             <i data-lucide="panels-top-left" class="w-3.5 h-3.5"></i> UI/UX 專業提案規格
                         </span>
                     </div>
-
+                    
                     <div class="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-6 max-h-[480px] overflow-y-auto custom-scrollbar">
                         <div>
                             <span class="text-[11px] font-bold text-indigo-600 uppercase tracking-wider">專案主題 Theme</span>
                             <h3 class="text-lg font-bold text-slate-800 mt-0.5">${state.specificTheme}</h3>
                         </div>
-
+                        
                         <hr class="border-slate-100">
-
+                        
                         <div>
                             <span class="text-[11px] font-bold text-purple-600 uppercase tracking-wider flex items-center gap-1">
                                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 一、 專案摘要與設計願景
@@ -602,19 +597,19 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
             showToast("請貼上 AI 分析回傳的心智圖清單！", "error");
             return;
         }
-
+        
         const lines = val.split('\n').map(l => l.trim()).filter(l => l !== '');
         const affinities = [];
-
+        
         lines.forEach(line => {
             const colonIdx = line.indexOf('：') !== -1 ? line.indexOf('：') : line.indexOf(':');
             if (colonIdx !== -1) {
                 let category = line.substring(0, colonIdx).trim();
                 category = category.replace(/^\d+[\.\、\s]*/, '').replace(/^[-*+\s]*/, '').replace(/^[一二三四五六七八九十]+、/, '').trim();
-
+                
                 const itemsStr = line.substring(colonIdx + 1).trim();
                 const items = itemsStr.split(/[,，、\s]+/).map(i => i.trim()).filter(i => i !== '');
-
+                
                 if (category && items.length > 0) {
                     affinities.push({ category, items });
                 }
@@ -625,7 +620,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
             showToast("解析失敗，請確保每一行的格式類似「介面操作易用性：大字體支援, 拖曳元件」", "error");
             return;
         }
-
+        
         state.affinities = affinities;
         state.step = 3;
         render();
@@ -650,26 +645,68 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
         let businessContent = "";
         let timelineContent = "";
         let currentHeader = "";
+        
+        // 更健全且高容錯的標題偵測機制
+        function detectHeader(line) {
+            const l = line.trim();
+            if (l.length > 50) return null; // 標題行不應超過 50 字，有效防止把含有專屬名詞的長內文誤判為新章節
+
+            // 移除行首標記、Markdown 標籤、星號與括號等，將文字正規化便於匹配
+            const clean = l.replace(/[\*#_\[\]【】\-\s\d\.\、]/g, "");
+
+            // 一、專案摘要與設計願景
+            if (clean.includes("專案摘要") || clean.includes("設計願景") || clean.includes("核心概念")) {
+                return "summary";
+            }
+            // 二、使用者痛點與介面需求分析
+            if (clean.includes("痛點分析") || clean.includes("需求分析") || clean.includes("痛點與介面")) {
+                return "background";
+            }
+            // 三、資訊架構與介面流程設計
+            if (clean.includes("資訊架構") || clean.includes("流程設計") || clean.includes("介面流程") || clean.includes("UserFlow")) {
+                return "persona";
+            }
+            // 四、視覺設計與介面設計系統 (Design System)
+            if (clean.includes("視覺設計") || clean.includes("設計系統") || clean.includes("StyleGuide") || clean.includes("DesignSystem")) {
+                return "valueProp";
+            }
+            // 五、核心互動機制與動效設計
+            if (clean.includes("互動機制") || clean.includes("動效設計") || clean.includes("手勢設計") || clean.includes("微交互")) {
+                return "blueprint";
+            }
+            // 六、原型開發與高低擬真測試規劃
+            if (clean.includes("原型開發") || clean.includes("測試規劃") || clean.includes("擬真測試") || clean.includes("可用性測試")) {
+                return "prototype";
+            }
+            // 七、系統架構、前端實施與無障礙設計
+            if (clean.includes("系統架構") || clean.includes("前端實施") || clean.includes("無障礙") || clean.includes("WCAG")) {
+                return "business";
+            }
+            // 八、介面迭代時程與專案資源編制
+            if (clean.includes("迭代時程") || clean.includes("資源編制") || clean.includes("甘特") || clean.includes("時程與資源")) {
+                return "timeline";
+            }
+
+            // 備用匹配：如果使用者刪改了標題文字，則改用行首的中文數字序號比對
+            const cleanWithNum = l.replace(/[\*#_\[\]【】\-\s]/g, "");
+            if (cleanWithNum.match(/^[一1I]、/) || cleanWithNum.startsWith("第一章") || cleanWithNum.startsWith("第一、") || cleanWithNum.startsWith("1.")) return "summary";
+            if (cleanWithNum.match(/^[二2]、/) || cleanWithNum.startsWith("第二章") || cleanWithNum.startsWith("第二、") || cleanWithNum.startsWith("2.")) return "background";
+            if (cleanWithNum.match(/^[三3]、/) || cleanWithNum.startsWith("第三章") || cleanWithNum.startsWith("第三、") || cleanWithNum.startsWith("3.")) return "persona";
+            if (cleanWithNum.match(/^[四4]、/) || cleanWithNum.startsWith("第四章") || cleanWithNum.startsWith("第四、") || cleanWithNum.startsWith("4.")) return "valueProp";
+            if (cleanWithNum.match(/^[五5]、/) || cleanWithNum.startsWith("第五章") || cleanWithNum.startsWith("第五、") || cleanWithNum.startsWith("5.")) return "blueprint";
+            if (cleanWithNum.match(/^[六6]、/) || cleanWithNum.startsWith("第六章") || cleanWithNum.startsWith("第六、") || cleanWithNum.startsWith("6.")) return "prototype";
+            if (cleanWithNum.match(/^[七7]、/) || cleanWithNum.startsWith("第七章") || cleanWithNum.startsWith("第七、") || cleanWithNum.startsWith("7.")) return "business";
+            if (cleanWithNum.match(/^[八8]、/) || cleanWithNum.startsWith("第八章") || cleanWithNum.startsWith("第八、") || cleanWithNum.startsWith("8.")) return "timeline";
+
+            return null;
+        }
 
         lines.forEach(line => {
-            const l = line.trim();
-            if (l.includes("【一、") || l.includes("專案摘要") || l.includes("設計願景")) {
-                currentHeader = "summary";
-            } else if (l.includes("【二、") || l.includes("痛點分析") || l.includes("需求分析")) {
-                currentHeader = "background";
-            } else if (l.includes("【三、") || l.includes("資訊架構") || l.includes("流程設計")) {
-                currentHeader = "persona";
-            } else if (l.includes("【四、") || l.includes("視覺設計") || l.includes("設計系統") || l.includes("UI Style Guide")) {
-                currentHeader = "valueProp";
-            } else if (l.includes("【五、") || l.includes("互動機制") || l.includes("動效設計") || l.includes("微交互")) {
-                currentHeader = "blueprint";
-            } else if (l.includes("【六、") || l.includes("原型開發") || l.includes("測試規劃") || l.includes("可用性測試")) {
-                currentHeader = "prototype";
-            } else if (l.includes("【七、") || l.includes("系統架構") || l.includes("前端實施") || l.includes("無障礙設計")) {
-                currentHeader = "business";
-            } else if (l.includes("【八、") || l.includes("迭代時程") || l.includes("資源編制") || l.includes("甘特圖")) {
-                currentHeader = "timeline";
-            } else if (l !== "") {
+            const detected = detectHeader(line);
+            if (detected) {
+                currentHeader = detected;
+            } else if (currentHeader && line.trim() !== "") {
+                // 將內容收集至相應的變數
                 if (currentHeader === "summary") summaryContent += line + "\n";
                 else if (currentHeader === "background") backgroundContent += line + "\n";
                 else if (currentHeader === "persona") personaContent += line + "\n";
@@ -680,13 +717,13 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
                 else if (currentHeader === "timeline") timelineContent += line + "\n";
             }
         });
-
+        
         const summary = summaryContent.trim();
         if (!summary) {
-            showToast("解析失敗！未能正確辨識【一、專案摘要與設計願景】段落，請確認貼上的標題是否正確。", "error");
+            showToast("解析失敗！未能辨識出【一、專案摘要與設計願景】。請確認貼上的文字開頭含有該標題，或採用標準一、二、三、序號標註。", "error");
             return;
         }
-
+        
         state.summary = summary;
         state.background = backgroundContent.trim() || "無提供使用者痛點與介面需求分析。";
         state.persona = personaContent.trim() || "無提供資訊架構與介面流程設計。";
@@ -695,7 +732,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
         state.prototype = prototypeContent.trim() || "無提供原型開發與高低擬真測試規劃。";
         state.business = businessContent.trim() || "無提供系統架構、前端實施與無障礙設計。";
         state.timeline = timelineContent.trim() || "無提供介面迭代時程與專案資源編制。";
-
+        
         state.step = 4;
         render();
         showToast("8 大介面設計章節計畫草案解析匯入成功！");
@@ -749,21 +786,21 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
         showLoader("模擬生成 8 大互動介面設計提案計畫書中...");
         setTimeout(() => {
             state.summary = `『${state.specificTheme}』是一個專為高齡長者與年輕學子打造的跨世代價值對接行動介面系統。本專案以「資訊降噪」與「極簡直覺操作」為核心願景，捨棄傳統複雜的多階層目錄，以一目了然的「大尺寸卡片式元件」搭配「智慧引導式語音助手」，幫助長者輕鬆發佈傳統手藝或生命故事，並使青年能直覺配對並協助數位轉譯。系統透過微震動與溫暖的微光微交互，在物理操作與數位螢幕間打造前所未有的友善情感共振體驗。`;
-
+            
             state.background = "現行行動應用介面普遍為年輕族群設計：按鍵觸控面積過小、資訊密度過高、對比度不足，導致高齡長者在使用時產生極大的「數位焦慮與排斥感」。此外，缺乏流暢且具備引導功能的 User Flow，使得世代間的配對交換機制無法無縫對接，阻礙了高齡社會下的無障礙交流。";
-
+            
             state.persona = "1. 系統使用者(長者端)：林爺爺 (72歲)，視力退化、手指關節不便，對高資訊量感到抗拒。希望有一鍵放大的操作反饋。2. 系統使用者(青年端)：陳同學 (20歲)，重度多媒體依賴者，追求極速轉場、現代感卡片視覺、手勢控制，期望快速達成社區實踐配對任務。";
-
+            
             state.valueProp = "本系統採用 W3C 的 WCAG 2.1 無障礙設計標準。針對長者，提供自動對比增強（黃/藍色高對比卡片）與實時語音反饋（Speech-to-Text 輔助）；針對青年，提供拖曳手勢（Swipe Right 配對，Swipe Left 下一筆）與無縫骨架屏轉場動效，大幅消減雙方的操作摩擦。";
-
+            
             state.blueprint = "1. 註冊登入：提供極簡高對比頁面與無障礙輔助設定。2. 核心大廳：採用卡片式資訊架構，使用者可橫向滑動卡片，左右拖動即表示發起配對，具備即時物理微震動(Haptic Feedback)和微粒子擴散動效。3. 任務狀態：成功配對時，App 自底向上滑出半屏浮動卡（BottomSheet），提供一鍵導航與語音備忘功能。";
-
+            
             state.prototype = "原型規劃分為兩個階段。Lo-Fi 階段：使用 Figma 繪製灰階 Wireframe，驗證高對比文字排版與三格畫面流程。Hi-Fi 階段：在 Figma 實作變體元件(Interactive Components)與轉場微動畫。我們將進行兩輪可用性測試（Usability Testing），找尋 5 位長者與 5 位青年，以「出聲思考法（Think Aloud）」測試單項任務完成時間與 NPS 滿意度（目標 > 80%）。";
-
+            
             state.business = "採用 React Native 進行跨平台前端實施，確保 iOS/Android 設計系統的一致性，後端整合 Firebase 即時資料庫達成即時訊息配對。本介面系統不僅可授權予地方政府高齡活化專案與大學 USR 服務學習系統使用，亦可作為企業 ESG 專案之公益科技模組。";
-
-            state.timeline = "Week 1-3：IQA 使用者探索與介面資訊架構 (IA) 整理。Week 4-6：Wireframe 與低擬真原型可用性評估。Week 7-10：設計系統 (Design System) 與高擬真互動原型製作。Week 11-12：雙平台前端實施、WCAG A11y 測試與上線發佈。團隊角色：UI設計師、UX研究員、前端工程師。";
-
+            
+            state.timeline = "Week 1-3：IQA 使用者探索與介面資訊架構 (IA) 整理。Week 4-6：Wireframe 與低擬真原型可用性評估。Week 7-10：設計系統 (Design System) 與高擬真互動原型製作. Week 11-12：雙平台前端實施、WCAG A11y 測試與上線發佈。團隊角色：UI設計師、UX研究員、前端工程師。";
+            
             state.step = 4;
             hideLoader();
             render();
@@ -831,10 +868,10 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
             <h1>【正式提案】互動介面設計(UI/UX) 與 IQA 專題計畫書</h1>
             <div class="meta-text">本計畫書基於 IQA 交互質性分析思考與 UI/UX 核心準則收斂而成</div>
             <div class="theme">專案主題：${state.specificTheme}</div>
-
+            
             <h2>一、 專案摘要與設計願景 (Executive Summary)</h2>
             <div class="card">${state.summary.replace(/\n/g, '<br>')}</div>
-
+            
             <h2>二、 使用者痛點與介面需求分析 (User Pain Points & Interface Requirements)</h2>
             <div class="card" style="background-color: #fef2f2;">${state.background.replace(/\n/g, '<br>')}</div>
 
@@ -889,6 +926,7 @@ ${state.affinities.map(a => `- ${a.category}：${a.items.join(', ')}`).join('\n'
     }
 
     // 啟動首頁
-    render();</script>
+    render();
+</script>
 </body>
 </html>
